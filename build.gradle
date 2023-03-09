@@ -132,6 +132,13 @@ allprojects {
       url 'https://splunk.jfrog.io/splunk/ext-releases-local'
       content { includeGroupByRegex('com\\.splunk\\..*') }
     }
+    maven {
+      url = uri("https://maven.pkg.github.com/noirgif/filibuster-java-instrumentation")
+      credentials {
+        username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+        password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+      }
+    }
     mavenCentral()
 
     // ethereum execution spec tests fixtures. Exclusively for ethereum submodule to run ref tests
@@ -150,6 +157,7 @@ allprojects {
     }
   }
 
+  dependencies { implementation 'cloud.filibuster:instrumentation:1.1.16' }
   dependencies { errorprone 'com.google.errorprone:error_prone_core' }
 
   apply plugin: 'com.diffplug.spotless'

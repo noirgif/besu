@@ -46,7 +46,8 @@ ext.acceptedLicenses = [
   'Public Domain (CC0) License 1.0',
   'Public Domain',
   'Unicode/ICU License',
-  'New BSD License'
+  'New BSD License',
+  'The JSON License',
 ]*.toLowerCase()
 
 /**
@@ -64,6 +65,7 @@ downloadLicenses {
     'com.google.errorprone:javac:.*',
     'org.checkerframework:dataflow-shaded:.*',
     'org.checkerframework:dataflow-errorprone:.*',
+    'cloud.filibuster:.*'
   ]
 
   ext.apache = license('Apache License, Version 2.0', 'http://opensource.org/licenses/Apache-2.0')
@@ -86,11 +88,13 @@ downloadLicenses {
       'The Apache License, Version 2.0',
       'The Apache Software License, Version 2.0',
       'The Apache Software License, version 2.0',
+            'Apache Software Licenses',
       license('', 'http://www.apache.org/licenses/LICENSE-2.0.txt')
     ],
     (bsd) : [
       'BSD',
       'BSD-2-Clause',
+      'BSD 2-Clause License',
       'BSD licence',
       'The BSD License',
     ],
@@ -111,7 +115,8 @@ downloadLicenses {
       license('BSD 3-clause', 'http://opensource.org/licenses/BSD-3-Clause'),
     ],
     (cc0) : [
-      'CC0'
+      'CC0',
+      'Public Domain, per Creative Commons CC0'
     ],
     (cddl) : [
       'CDDL 1.0',
@@ -126,7 +131,8 @@ downloadLicenses {
     ],
     (epl2) : [
       'Eclipse Public License - v 2.0',
-      'Eclipse Public License version 2.0'
+      'Eclipse Public License version 2.0',
+            'Eclipse Public License v2.0'
     ],
     (mit) : [
       'MIT',
@@ -180,6 +186,9 @@ downloadLicenses {
     // Explicitly state BSD License for license scanning.
     'org.antlr:antlr-runtime:3.5.2': bsd,
     'org.antlr:ST4:4.3.1': bsd,
+
+    // Cryptacular is under Apache 2.0/LGPL 3.0 License
+    'org.cryptacular:cryptacular:1.1.4': apache,
   ]
 }
 
