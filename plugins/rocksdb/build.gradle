@@ -57,3 +57,21 @@ dependencies {
 
   testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
 }
+
+configurations {
+    testImplementation.extendsFrom testApi
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+task testJar(type: Jar) {
+    archiveClassifier.set('tests')
+    from sourceSets.test.output
+}
+
+artifacts {
+    testImplementation testJar
+}

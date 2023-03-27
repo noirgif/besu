@@ -41,7 +41,6 @@ import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
-import cloud.filibuster.junit.FilibusterTest;
 
 public class MainnetBlockValidatorTest {
 
@@ -72,7 +71,7 @@ public class MainnetBlockValidatorTest {
                     .setBlockHeaderFunctions(new MainnetBlockHeaderFunctions()));
   }
 
-  @FilibusterTest
+  @Test
   public void shouldDetectAndCacheInvalidBlocksWhenParentBlockNotPresent() {
     when(blockchain.getBlockHeader(anyLong())).thenReturn(Optional.empty());
     assertThat(badBlockManager.getBadBlocks().size()).isEqualTo(0);
@@ -84,7 +83,7 @@ public class MainnetBlockValidatorTest {
     assertThat(badBlockManager.getBadBlocks().size()).isEqualTo(1);
   }
 
-  @FilibusterTest
+  @Test
   public void shouldDetectAndCacheInvalidBlocksWhenHeaderInvalid() {
     when(blockchain.getBlockHeader(any(Hash.class)))
         .thenReturn(Optional.of(new BlockHeaderTestFixture().buildHeader()));
@@ -104,7 +103,7 @@ public class MainnetBlockValidatorTest {
     assertThat(badBlockManager.getBadBlocks().size()).isEqualTo(1);
   }
 
-  @FilibusterTest
+  @Test
   public void shouldDetectAndCacheInvalidBlocksWhenParentWorldStateNotAvailable() {
     when(blockchain.getBlockHeader(any(Hash.class)))
         .thenReturn(Optional.of(new BlockHeaderTestFixture().buildHeader()));
@@ -126,7 +125,7 @@ public class MainnetBlockValidatorTest {
     assertThat(badBlockManager.getBadBlocks().size()).isEqualTo(1);
   }
 
-  @FilibusterTest
+  @Test
   public void shouldDetectAndCacheInvalidBlocksWhenProcessBlockFailed() {
     when(blockchain.getBlockHeader(any(Hash.class)))
         .thenReturn(Optional.of(new BlockHeaderTestFixture().buildHeader()));
@@ -149,7 +148,7 @@ public class MainnetBlockValidatorTest {
     assertThat(badBlockManager.getBadBlocks().size()).isEqualTo(1);
   }
 
-  @FilibusterTest
+  @Test
   public void shouldDetectAndCacheInvalidBlocksWhenBodyInvalid() {
     when(blockchain.getBlockHeader(any(Hash.class)))
         .thenReturn(Optional.of(new BlockHeaderTestFixture().buildHeader()));
@@ -172,7 +171,7 @@ public class MainnetBlockValidatorTest {
     assertThat(badBlockManager.getBadBlocks().size()).isEqualTo(1);
   }
 
-  @FilibusterTest
+  @Test
   public void shouldNotCacheWhenValidBlocks() {
     MutableWorldState mockWorldState =
         when(mock(MutableWorldState.class).isPersistable()).thenReturn(true).getMock();
@@ -207,7 +206,7 @@ public class MainnetBlockValidatorTest {
     assertThat(badBlockManager.getBadBlocks()).isEmpty();
   }
 
-  @FilibusterTest
+  @Test
   public void shouldReturnBadBlockBasedOnTheHash() {
     when(blockchain.getBlockHeader(any(Hash.class)))
         .thenReturn(Optional.of(new BlockHeaderTestFixture().buildHeader()));
@@ -225,7 +224,7 @@ public class MainnetBlockValidatorTest {
     assertThat(badBlockManager.getBadBlock(badBlock.getHash())).containsSame(badBlock);
   }
 
-  @FilibusterTest
+  @Test
   public void when_shouldRecordBadBlockIsFalse_Expect_BlockNotAddedToBadBlockManager() {
     when(blockchain.getBlockHeader(any(Hash.class)))
         .thenReturn(Optional.of(new BlockHeaderTestFixture().buildHeader()));
@@ -240,7 +239,7 @@ public class MainnetBlockValidatorTest {
     assertThat(badBlockManager.getBadBlocks().size()).isEqualTo(0);
   }
 
-  @FilibusterTest
+  @Test
   public void when_shouldRecordBadBlockIsTrue_Expect_BlockAddedToBadBlockManager() {
     when(blockchain.getBlockHeader(any(Hash.class)))
         .thenReturn(Optional.of(new BlockHeaderTestFixture().buildHeader()));
@@ -255,7 +254,7 @@ public class MainnetBlockValidatorTest {
     assertThat(badBlockManager.getBadBlocks().size()).isEqualTo(1);
   }
 
-  @FilibusterTest
+  @Test
   public void when_shouldRecordBadBlockIsNotSet_Expect_BlockAddedToBadBlockManager() {
     when(blockchain.getBlockHeader(any(Hash.class)))
         .thenReturn(Optional.of(new BlockHeaderTestFixture().buildHeader()));

@@ -48,18 +48,18 @@ public class RocksDBKeyValueStorageFactory implements KeyValueStorageFactory {
   private static final int DEFAULT_VERSION = 1;
   private static final Set<Integer> SUPPORTED_VERSIONS = Set.of(0, 1, 2);
   private static final String NAME = "rocksdb";
-  private final RocksDBMetricsFactory rocksDBMetricsFactory;
+  protected final RocksDBMetricsFactory rocksDBMetricsFactory;
 
   private final int defaultVersion;
-  private Integer databaseVersion;
+  protected Integer databaseVersion;
   private Boolean isSegmentIsolationSupported;
   private RocksDBColumnarKeyValueStorage segmentedStorage;
-  private KeyValueStorage unsegmentedStorage;
-  private RocksDBConfiguration rocksDBConfiguration;
+  protected KeyValueStorage unsegmentedStorage;
+  protected RocksDBConfiguration rocksDBConfiguration;
 
   private final Supplier<RocksDBFactoryConfiguration> configuration;
-  private final List<SegmentIdentifier> segments;
-  private final List<SegmentIdentifier> ignorableSegments;
+  protected final List<SegmentIdentifier> segments;
+  protected final List<SegmentIdentifier> ignorableSegments;
 
   /**
    * Instantiates a new RocksDb key value storage factory.
@@ -211,7 +211,7 @@ public class RocksDBKeyValueStorageFactory implements KeyValueStorageFactory {
     return commonConfiguration.getStoragePath();
   }
 
-  private void init(final BesuConfiguration commonConfiguration) {
+  protected void init(final BesuConfiguration commonConfiguration) {
     try {
       databaseVersion = readDatabaseVersion(commonConfiguration);
     } catch (final IOException e) {
@@ -228,7 +228,7 @@ public class RocksDBKeyValueStorageFactory implements KeyValueStorageFactory {
             .build();
   }
 
-  private boolean requiresInit() {
+  protected boolean requiresInit() {
     return segmentedStorage == null && unsegmentedStorage == null;
   }
 
