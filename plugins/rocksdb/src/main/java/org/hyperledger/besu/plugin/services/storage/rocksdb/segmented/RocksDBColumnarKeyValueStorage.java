@@ -87,7 +87,7 @@ public class RocksDBColumnarKeyValueStorage
   private final TransactionDBOptions txOptions;
   private final OptimisticTransactionDB db;
   private final AtomicBoolean closed = new AtomicBoolean(false);
-  private final Map<String, RocksDbSegmentIdentifier> columnHandlesByName;
+  protected final Map<String, RocksDbSegmentIdentifier> columnHandlesByName;
   private final RocksDBMetrics metrics;
   private final WriteOptions tryDeleteOptions =
       new WriteOptions().setNoSlowdown(true).setIgnoreMissingColumnFamilies(true);

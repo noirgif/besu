@@ -22,12 +22,12 @@ import org.hyperledger.besu.plugin.services.storage.rocksdb.RocksDBMetricsFactor
 import org.hyperledger.besu.plugin.services.storage.rocksdb.RocksDbSegmentIdentifier;
 import org.hyperledger.besu.plugin.services.storage.rocksdb.configuration.RocksDBConfiguration;
 import org.hyperledger.besu.plugin.services.storage.rocksdb.segmented.RocksDBColumnarKeyValueStorage;
+import org.hyperledger.besu.plugin.services.storage.rocksdb.faultinjection.RocksDBFaultInjectionConfig;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import org.apache.commons.codec.binary.Hex;
+import java.util.Arrays;
 
 public class RocksDBFaultyColumnarKeyValueStorage extends RocksDBColumnarKeyValueStorage {
   private int faultCounter = 0;
@@ -56,7 +56,7 @@ public class RocksDBFaultyColumnarKeyValueStorage extends RocksDBColumnarKeyValu
     faultInjectionConfig = new RocksDBFaultInjectionConfig(false, 0);
   }
 
-  public void setFaultInjectionConfig(RocksDBFaultInjectionConfig config) {
+  public void setFaultInjectionConfig(final RocksDBFaultInjectionConfig config) {
     if (config != null) {
       faultInjectionConfig = config;
     }
@@ -87,7 +87,7 @@ public class RocksDBFaultyColumnarKeyValueStorage extends RocksDBColumnarKeyValu
       // TODO: see if similar exceptions can be handled by the caller, or does the caller
       // distinguish between different RocksDBExceptions?
       throw new StorageException(
-          "Injected fault on get" + segmentName + " " + Hex.encodeHexString(key));
+          "Injected fault on get" + segmentName + " " + Arrays.toString(key));
     }
     return result;
   }

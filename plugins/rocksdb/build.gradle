@@ -59,12 +59,7 @@ dependencies {
 }
 
 configurations {
-    testImplementation.extendsFrom testApi
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
+    testArtifacts.extendsFrom testImplementation
 }
 
 task testJar(type: Jar) {
@@ -73,5 +68,5 @@ task testJar(type: Jar) {
 }
 
 artifacts {
-    testImplementation testJar
+    testArtifacts testJar
 }

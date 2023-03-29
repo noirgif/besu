@@ -13,13 +13,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.hyperledger.besu.plugin.services.storage.rocksdb.configuration;
+package org.hyperledger.besu.plugin.services.storage.rocksdb.faultinjection;
 
 public class RocksDBFaultInjectionConfig {
-  private boolean enableFaultInjection;
-  private int faultInjectionCount;
+  private final boolean enableFaultInjection;
+  private final int faultInjectionCount;
 
-  public RocksDBFaultInjectionConfig(boolean enableFaultInjection, int faultInjectionCount) {
+  public RocksDBFaultInjectionConfig(final boolean enableFaultInjection, final int faultInjectionCount) {
     this.enableFaultInjection = enableFaultInjection;
     this.faultInjectionCount = faultInjectionCount;
   }

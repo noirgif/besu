@@ -59,7 +59,7 @@ public class DefaultSynchronizerIntegrationTest {
         originalData,
         new SimpleFileVisitor<Path>() {
           @Override
-          public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+          public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs)
               throws IOException {
             Path targetPath = tempData.resolve(originalData.relativize(dir));
             if (!Files.exists(targetPath)) {
@@ -69,7 +69,7 @@ public class DefaultSynchronizerIntegrationTest {
           }
 
           @Override
-          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+          public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
               throws IOException {
             Files.copy(file, tempData.resolve(originalData.relativize(file)));
             return FileVisitResult.CONTINUE;
@@ -96,13 +96,13 @@ public class DefaultSynchronizerIntegrationTest {
                 new BesuConfiguration() {
                   @Override
                   public Path getStoragePath() {
-                    return new File(tempData.getRoot().toString() + File.pathSeparator + "database")
+                    return new File(tempData.toString() + File.pathSeparator + "database")
                         .toPath();
                   }
 
                   @Override
                   public Path getDataPath() {
-                    return tempData.getRoot();
+                    return tempData;
                   }
 
                   @Override
@@ -122,7 +122,7 @@ public class DefaultSynchronizerIntegrationTest {
             .build();
 
     // TODO: set up peer
-    BesuController peerBesuController = new MergeBesuControllerBuilder().build();
+    // BesuController peerBesuController = new MergeBesuControllerBuilder().build();
 
     // TODO: trace healing
   }

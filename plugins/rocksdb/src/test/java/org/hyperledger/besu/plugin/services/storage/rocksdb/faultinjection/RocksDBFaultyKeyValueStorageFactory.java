@@ -25,6 +25,8 @@ import org.hyperledger.besu.plugin.services.storage.rocksdb.RocksDbSegmentIdenti
 import org.hyperledger.besu.plugin.services.storage.rocksdb.configuration.RocksDBFactoryConfiguration;
 import org.hyperledger.besu.plugin.services.storage.rocksdb.unsegmented.RocksDBKeyValueStorage;
 import org.hyperledger.besu.services.kvstore.SegmentedKeyValueStorageAdapter;
+import org.hyperledger.besu.plugin.services.storage.rocksdb.faultinjection.RocksDBFaultInjectionConfig;
+import org.hyperledger.besu.plugin.services.storage.rocksdb.faultinjection.RocksDBFaultyColumnarKeyValueStorage;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -35,7 +37,7 @@ public class RocksDBFaultyKeyValueStorageFactory extends RocksDBKeyValueStorageF
 
   private static final int DEFAULT_VERSION = 1;
   private RocksDBFaultyColumnarKeyValueStorage segmentedStorage;
-  private RocksDBFaultInjectionConfig faultInjectionConfig;
+  private final RocksDBFaultInjectionConfig faultInjectionConfig;
 
   /**
    * Instantiates a new RocksDb key value storage factory.
