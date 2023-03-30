@@ -15,19 +15,36 @@
 
 package org.hyperledger.besu.ethereum;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static org.hyperledger.besu.controller.BesuController.DATABASE_PATH;
+
+import org.hyperledger.besu.cli.config.EthNetworkConfig;
+import org.hyperledger.besu.cli.config.NetworkName;
 import org.hyperledger.besu.controller.BesuController;
-import org.hyperledger.besu.controller.MergeBesuControllerBuilder;
+import org.hyperledger.besu.controller.BesuControllerBuilder;
+import org.hyperledger.besu.crypto.KeyPairSecurityModule;
+import org.hyperledger.besu.crypto.KeyPairUtil;
+import org.hyperledger.besu.crypto.NodeKey;
+import org.hyperledger.besu.ethereum.core.MiningParameters;
+import org.hyperledger.besu.ethereum.eth.EthProtocolConfiguration;
+import org.hyperledger.besu.ethereum.eth.sync.SyncMode;
+import org.hyperledger.besu.ethereum.eth.sync.SynchronizerConfiguration;
+import org.hyperledger.besu.ethereum.eth.transactions.TransactionPoolConfiguration;
 import org.hyperledger.besu.ethereum.storage.keyvalue.KeyValueSegmentIdentifier;
 import org.hyperledger.besu.ethereum.storage.keyvalue.KeyValueStorageProvider;
 import org.hyperledger.besu.ethereum.storage.keyvalue.KeyValueStorageProviderBuilder;
+import org.hyperledger.besu.evm.internal.EvmConfiguration;
+import org.hyperledger.besu.metrics.MetricsSystemFactory;
+import org.hyperledger.besu.metrics.ObservableMetricsSystem;
 import org.hyperledger.besu.metrics.noop.NoOpMetricsSystem;
-import org.hyperledger.besu.plugin.services.BesuConfiguration;
+import org.hyperledger.besu.metrics.prometheus.MetricsConfiguration;
+import org.hyperledger.besu.plugin.data.EnodeURL;
 import org.hyperledger.besu.plugin.services.storage.rocksdb.RocksDBMetricsFactory;
 import org.hyperledger.besu.plugin.services.storage.rocksdb.configuration.RocksDBFactoryConfiguration;
 import org.hyperledger.besu.plugin.services.storage.rocksdb.faultinjection.RocksDBFaultInjectionConfig;
 import org.hyperledger.besu.plugin.services.storage.rocksdb.faultinjection.RocksDBFaultyKeyValueStorageFactory;
+import org.hyperledger.besu.services.BesuConfigurationImpl;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -35,7 +52,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Clock;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.tuweni.bytes.Bytes;
@@ -71,7 +91,7 @@ public class DefaultSynchronizerIntegrationTest {
           @Override
           public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
               throws IOException {
-            Files.copy(file, tempData.resolve(originalData.relativize(file)));
+            Files.copy(file, tempData.resolve(originalData.relativize(file)), REPLACE_EXISTING);
             return FileVisitResult.CONTINUE;
           }
         });
@@ -93,32 +113,41 @@ public class DefaultSynchronizerIntegrationTest {
                     RocksDBMetricsFactory.PUBLIC_ROCKS_DB_METRICS,
                     new RocksDBFaultInjectionConfig(false, 1)))
             .withCommonConfiguration(
-                new BesuConfiguration() {
-                  @Override
-                  public Path getStoragePath() {
-                    return new File(tempData.toString() + File.pathSeparator + "database")
-                        .toPath();
-                  }
-
-                  @Override
-                  public Path getDataPath() {
-                    return tempData;
-                  }
-
-                  @Override
-                  public int getDatabaseVersion() {
-                    return 2;
-                  }
-                })
+                new BesuConfigurationImpl(tempData, tempData.resolve(DATABASE_PATH)))
             .withMetricsSystem(new NoOpMetricsSystem())
             .build();
 
-    // set the storage controller to fault
+    final NetworkName network = NetworkName.SEPOLIA;
+    final ObservableMetricsSystem metricsSystem =
+        MetricsSystemFactory.create(MetricsConfiguration.builder().build());
+    final List<EnodeURL> bootnodes = List.of();
+    final EthNetworkConfig.Builder networkConfigBuilder =
+        new EthNetworkConfig.Builder(EthNetworkConfig.getNetworkConfig(network))
+            .setBootNodes(bootnodes);
+    final EthNetworkConfig ethNetworkConfig = networkConfigBuilder.build();
+    final int maxPeers = 25;
+
+    BesuControllerBuilder builder =
+        new BesuController.Builder()
+            .fromEthNetworkConfig(ethNetworkConfig, Collections.emptyMap(), SyncMode.FAST);
 
     besuController =
-        new MergeBesuControllerBuilder()
+        builder
+            .synchronizerConfiguration(new SynchronizerConfiguration.Builder().build())
             .dataDirectory(tempData)
+            .miningParameters(new MiningParameters.Builder().build())
+            .privacyParameters(null)
+            .nodeKey(new NodeKey(new KeyPairSecurityModule(KeyPairUtil.loadKeyPair(tempData))))
+            .metricsSystem(metricsSystem)
+            .transactionPoolConfiguration(TransactionPoolConfiguration.DEFAULT)
+            .ethProtocolConfiguration(EthProtocolConfiguration.defaultConfig())
+            .clock(Clock.systemUTC())
+            .isRevertReasonEnabled(false)
             .storageProvider(keyValueStorageProvider)
+            .gasLimitCalculator(GasLimitCalculator.constant())
+            .pkiBlockCreationConfiguration(Optional.empty())
+            .evmConfiguration(EvmConfiguration.DEFAULT)
+            .maxPeers(maxPeers)
             .build();
 
     // TODO: set up peer
